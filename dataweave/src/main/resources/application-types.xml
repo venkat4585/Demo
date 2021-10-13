@@ -1,0 +1,152 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<types:mule xmlns:types="http://www.mulesoft.org/schema/mule/types">
+  <types:catalog>
+    <types:type name="employeeJson" format="json">
+      <types:shape format="weave" example="examples/employee.json"><![CDATA[%dw 2.0
+
+type employeeJson = {|
+  empId: Number {"typeId": "int"}, 
+  empName: String, 
+  empAge: Number {"typeId": "int"}, 
+  empStatus: String
+|} {"example": "{\\\"empId\\\":3654,\\\"empName\\\":\\\"Venkat\\\",\\\"empAge\\\":25,\\\"empStatus\\\":\\\"Active\\\"}"}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="bookXml" format="xml">
+      <types:example format="xml" element="book" location="examples/Book.xml"/>
+    </types:type>
+    <types:type name="bookJson" format="json">
+      <types:shape format="weave" example="examples/book.json"><![CDATA[%dw 2.0
+
+type bookJson = {|
+  item: {|
+    "type": String, 
+    price: String, 
+    properties: {|
+      title: String, 
+      author: Array<String>, 
+      year: String, 
+      language: String
+    |}
+  |}
+|} {"example": "{\\\"item\\\":{\\\"type\\\":\\\"book\\\",\\\"price\\\":\\\"25\\\",\\\"properties\\\":{\\\"title\\\":\\\"Everyday Italian\\\",\\\"author\\\":[\\\"Giada De Laurentils\\\"],\\\"year\\\":\\\"2020\\\",\\\"language\\\":\\\"en\\\"}}}"}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="employeeCSV" format="csv">
+      <types:shape format="weave" example="examples/employee.csv"><![CDATA[%dw 2.0
+
+type employeeCSV = Array<{|  empId: String,   empName: String,   empAge: String,   empStatus: String|}> {"isQuotedString": "false",
+"header": "true",
+"headerLineNumber": "0"}
+
+]]></types:shape>
+      <types:properties>
+        <types:property name="headerLineNumber" value="0"/>
+        <types:property name="header" value="true"/>
+        <types:property name="isQuotedString" value="false"/>
+      </types:properties>
+    </types:type>
+    <types:type name="booksssXlsx" format="excel">
+      <types:shape format="weave"><![CDATA[%dw 2.0
+
+type booksssXlsx = {|
+  Sheet1?: Array<{|    empId: String,     empName: String,     empAge: String,     empStatus: String  |}>
+|}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="employeeXml" format="java">
+      <types:shape format="raml"><![CDATA[#%RAML 1.0 DataType
+type: string]]></types:shape>
+    </types:type>
+    <types:type name="employeeXsd" format="xml">
+      <types:shape format="xml-schema" element="emp" location="schemas/employee.xsd"/>
+    </types:type>
+  </types:catalog>
+  <types:enrichment select="#ee1bda0f-fb26-4ac2-a382-34eb44cfc4a8">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="employeeJson"/>
+        </types:message>
+      </types:input-event>
+      <types:output-event>
+        <types:message>
+          <types:payload type="employeeJson"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#b8278eda-7c8d-4719-b123-8ea14549f01c">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="bookXml"/>
+        </types:message>
+      </types:input-event>
+      <types:output-event>
+        <types:message>
+          <types:payload type="bookJson"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#8e9a1412-42e9-49d0-ac14-5374f09f3cf6">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="bookJson"/>
+        </types:message>
+      </types:input-event>
+      <types:output-event>
+        <types:message>
+          <types:payload type="bookXml"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#512854cd-5d1a-44bf-9a0f-32b7230e1090">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="employeeJson"/>
+        </types:message>
+      </types:input-event>
+      <types:output-event>
+        <types:message>
+          <types:payload type="employeeCSV"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#0ff87b38-22b9-422c-9c26-685dfe66223b">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="employeeCSV"/>
+        </types:message>
+      </types:input-event>
+      <types:output-event>
+        <types:message>
+          <types:payload type="employeeJson"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#456888b4-1133-4c6f-b504-b34fa7dd6bce">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="booksssXlsx"/>
+        </types:message>
+      </types:input-event>
+      <types:output-event>
+        <types:message>
+          <types:payload type="employeeXsd"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+</types:mule>
